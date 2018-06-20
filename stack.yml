@@ -1,0 +1,9 @@
+provider:
+  name: faas
+  gateway: http://127.0.0.1:8080
+
+functions:
+  filter-tweets:
+    lang: go
+    handler: ./filter-tweets
+    image: alexellis2/filter-tweets
