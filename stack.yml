@@ -6,8 +6,13 @@ functions:
   filter-tweets:
     lang: go
     handler: ./filter-tweets
-    image: alexellis2/filter-tweets:2018-04-18
+    image: alexellis2/filter-tweets:2019-07-24
     labels:
       com.openfaas.scale.zero: false
+    environment:
+      write_debug: true
+      read_debug: true
+      combine_output: false
     secrets:
       - tweet-filter-secrets
+
