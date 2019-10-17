@@ -22,7 +22,10 @@ func Handle(req []byte) string {
 		return fmt.Sprintf("Unable to unmarshal event: %s", unmarshalErr.Error())
 	}
 
-	if strings.Contains(currentTweet.Text, "RT") || currentTweet.Text == "alexellisuk_bot" || currentTweet.Username == "colorisebot" {
+	if strings.Contains(currentTweet.Text, "RT") ||
+		currentTweet.Text == "alexellisuk_bot" ||
+		currentTweet.Username == "colorisebot" ||
+		currentTweet.Username == "openfaas" {
 		return fmt.Sprintf("Filtered the tweet out")
 	}
 
