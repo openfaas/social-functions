@@ -13,18 +13,16 @@ import (
 
 // Handle a serverless request
 func Handle(req []byte) string {
-
 	currentTweet := tweet{}
 
-	unmarshalErr := json.Unmarshal(req, &currentTweet)
-
-	if unmarshalErr != nil {
-		return fmt.Sprintf("Unable to unmarshal event: %s", unmarshalErr.Error())
+	if err := json.Unmarshal(req, &currentTweet); err != nil {
+		return fmt.Sprintf("Unable to unmarshal event: %s", err.Error())
 	}
 
 	if strings.Contains(currentTweet.Text, "RT") ||
 		currentTweet.Text == "alexellisuk_bot" ||
 		currentTweet.Username == "colorisebot" ||
+		currentTweet.Username == "scmsFaAS" ||
 		currentTweet.Username == "openfaas" {
 		return fmt.Sprintf("Filtered the tweet out")
 	}
@@ -38,9 +36,9 @@ func Handle(req []byte) string {
 
 	bodyBytes, _ := json.Marshal(slackMsg)
 	httpReq, _ := http.NewRequest(http.MethodPost, slackURL, bytes.NewReader(bodyBytes))
-	res, resErr := http.DefaultClient.Do(httpReq)
-	if resErr != nil {
-		fmt.Fprintf(os.Stderr, "resErr: %s", resErr)
+	res, err := http.DefaultClient.Do(httpReq)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "resErr: %s", err)
 		os.Exit(1)
 	}
 
