@@ -6,7 +6,7 @@ functions:
   filter-tweets:
     lang: go
     handler: ./filter-tweets
-    image: alexellis2/filter-tweets:2019-07-24
+    image: ghcr.io/alexellis/filter-tweets:2021-12-08
     labels:
       com.openfaas.scale.zero: false
     environment:
@@ -14,5 +14,5 @@ functions:
       read_debug: true
       combine_output: false
     secrets:
-      - tweet-filter-secrets
+      - twitter-discord-webhook-url
 

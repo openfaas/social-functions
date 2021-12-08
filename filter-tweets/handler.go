@@ -27,7 +27,7 @@ func Handle(req []byte) string {
 		return fmt.Sprintf("Filtered the tweet out")
 	}
 
-	slackURL := readSecret("twitter-slack-incoming-webhook-url")
+	slackURL := readSecret("twitter-discord-webhook-url")
 
 	slackMsg := slackMessage{
 		Text:     "@" + currentTweet.Username + ": " + currentTweet.Text + " (via " + currentTweet.Link + ")",
@@ -68,5 +68,5 @@ func readSecret(name string) string {
 		os.Stderr.Write([]byte(err.Error()))
 		os.Exit(1)
 	}
-	return string(res)
+	return strings.TrimSpace(string(res))
 }
