@@ -27,20 +27,21 @@ func Handle(req []byte) string {
 		return "filtered the tweet out"
 	}
 
-	slackURL := readSecret("twitter-discord-webhook-url")
-	slackMsg := slackMessage{
+	discordURL := readSecret("twitter-discord-webhook-url")
+	discordMsg := discordMessage{
 		Content:  "@" + currentTweet.Username + ": " + currentTweet.Text + " (via " + currentTweet.Link + ")",
 		Username: "@" + currentTweet.Username,
 	}
 
-	bodyBytes, _ := json.Marshal(slackMsg)
-	httpReq, err := http.NewRequest(http.MethodPost, slackURL, bytes.NewReader(bodyBytes))
+	bodyBytes, _ := json.Marshal(discordMsg)
+	httpReq, err := http.NewRequest(http.MethodPost, discordURL, bytes.NewReader(bodyBytes))
 	if err != nil {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "resErr: %s", err)
 			os.Exit(1)
 		}
 	}
+
 	httpReq.Header.Set("Content-Type", "application/json")
 
 	res, err := http.DefaultClient.Do(httpReq)
@@ -55,12 +56,14 @@ func Handle(req []byte) string {
 
 	bodyRes, _ := ioutil.ReadAll(res.Body)
 
-	if res.StatusCode != http.StatusAccepted && res.StatusCode != http.StatusOK {
-		fmt.Fprintf(os.Stderr, "bad status code: %d, body: %s", res.StatusCode, string(bodyRes))
+	if res.StatusCode != http.StatusAccepted &&
+		res.StatusCode != http.StatusOK &&
+		res.StatusCode != http.StatusNoContent {
+		fmt.Fprintf(os.Stderr, "unexpected status code: %d, body: %s", res.StatusCode, string(bodyRes))
 		os.Exit(1)
 	}
 
-	return fmt.Sprintf("Tweet sent, with statusCode: %d", res.StatusCode)
+	return fmt.Sprintf("tweet forwarded [%d]", res.StatusCode)
 }
 
 // tweet in following format from IFTTT:
@@ -71,7 +74,7 @@ type tweet struct {
 	Link     string `json:"link"`
 }
 
-type slackMessage struct {
+type discordMessage struct {
 	Content  string `json:"content"`
 	Username string `json:"username"`
 }
