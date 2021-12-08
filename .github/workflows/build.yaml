@@ -53,11 +53,12 @@ jobs:
       - name: Login
         run: >
           echo ${{secrets.OPENFAAS_PASSWORD}} | 
-          faas-cli login --gateway ${{secrets.OPENFAAS_URL}} --password-stdin
+          faas-cli login --gateway ${{secrets.OPENFAAS_URL}}
+          --password-stdin
       - name: Create secrets
         run: >
           faas-cli secret create twitter-discord-webhook-url 
-          --gateway ${{secrets.OPENFAAS_URL}} --password-stdin
+          --gateway ${{secrets.OPENFAAS_URL}}
           --from-literal "${{ secrets.INCOMING_WEBHOOK_URL }}" || echo "Secret already exists"
       - name: Deploy
         run: >
