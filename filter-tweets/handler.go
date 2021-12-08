@@ -41,6 +41,7 @@ func Handle(req []byte) string {
 			os.Exit(1)
 		}
 	}
+	httpReq.Header.Set("Content-Type", "application/json")
 
 	res, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
