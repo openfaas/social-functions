@@ -24,18 +24,24 @@ func Handle(req []byte) string {
 		currentTweet.Username == "colorisebot" ||
 		currentTweet.Username == "scmsFaAS" ||
 		currentTweet.Username == "openfaas" {
-		return fmt.Sprintf("Filtered the tweet out")
+		return "filtered the tweet out"
 	}
 
 	slackURL := readSecret("twitter-discord-webhook-url")
-
 	slackMsg := slackMessage{
-		Text:     "@" + currentTweet.Username + ": " + currentTweet.Text + " (via " + currentTweet.Link + ")",
+		Content:  "@" + currentTweet.Username + ": " + currentTweet.Text + " (via " + currentTweet.Link + ")",
 		Username: "@" + currentTweet.Username,
 	}
 
 	bodyBytes, _ := json.Marshal(slackMsg)
-	httpReq, _ := http.NewRequest(http.MethodPost, slackURL, bytes.NewReader(bodyBytes))
+	httpReq, err := http.NewRequest(http.MethodPost, slackURL, bytes.NewReader(bodyBytes))
+	if err != nil {
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "resErr: %s", err)
+			os.Exit(1)
+		}
+	}
+
 	res, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "resErr: %s", err)
@@ -44,6 +50,13 @@ func Handle(req []byte) string {
 
 	if res.Body != nil {
 		defer res.Body.Close()
+	}
+
+	bodyRes, _ := ioutil.ReadAll(res.Body)
+
+	if res.StatusCode != http.StatusAccepted && res.StatusCode != http.StatusOK {
+		fmt.Fprintf(os.Stderr, "bad status code: %d, body: %s", res.StatusCode, string(bodyRes))
+		os.Exit(1)
 	}
 
 	return fmt.Sprintf("Tweet sent, with statusCode: %d", res.StatusCode)
@@ -58,7 +71,7 @@ type tweet struct {
 }
 
 type slackMessage struct {
-	Text     string `json:"text"`
+	Content  string `json:"content"`
 	Username string `json:"username"`
 }
 
