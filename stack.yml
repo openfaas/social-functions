@@ -6,7 +6,7 @@ functions:
   filter-tweets:
     lang: go
     handler: ./filter-tweets
-    image: ghcr.io/${OWNER:-openfaas}/filter-tweets-discord:${TAG:-2021-12-08}
+    image: ghcr.io/${OWNER:-openfaas}/filter-tweets-discord:${TAG:-2023-07-31}
     labels:
       com.openfaas.scale.zero: false
     environment:
